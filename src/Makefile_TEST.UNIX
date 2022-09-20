@@ -1,0 +1,32 @@
+#
+G = -g
+VFRDIR=../../vfr/dist
+
+ifeq ("$(shell uname)", "Linux") 
+  OS="Linux"
+endif
+ifeq ("$(shell uname)", "Darwin")
+  OS="MacOSX"
+endif
+
+CFLAGS = $(G) -D_FILE_OFFSET_BITS=64 -DGL_GLEXT_PROTOTYPES
+CXXFLAGS = $(CFLAGS) -I. -I../../vfr/util `$(VFRDIR)/config/vfr-config --SDL --cflags`
+LDLIBS = `$(VFRDIR)/config/vfr-config --SDL --libs` -L. -lNVR
+LDFLAGS = $(CFLAGS)
+
+ifeq ($(OS), "MacOSX")
+  CXXFLAGS += -DMACOSX
+  LDFLAGS += -bind_at_load
+endif
+
+
+all : TEST_NVR
+
+TEST_NVR : TEST_NVR.o
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+
+clean :
+	$(RM) TEST_NVR.o
+
+distclean : clean
+	$(RM) TEST_NVR

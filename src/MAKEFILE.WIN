@@ -1,0 +1,42 @@
+#
+# MAKEFILE for nvr library
+#
+GLEWDIR = ../../glew-1.9.0
+VFRDIR = ../../vfr/dist
+
+CFLAGS = /D_WINDOWS /DWINDOWS /W3 /GR \
+ /O1 /DNDEBUG /FD /EHsc /MD \
+ /I$(VFRDIR)/include /I$(GLEWDIR)/include \
+ /DGL_GLEXT_PROTOTYPES /D_WIN32
+
+OBJS =	nvrBspTree.obj \
+	nvrBrick.obj \
+	nvrBrickSorter.obj \
+	nvrOrthoSliceBrick.obj \
+	nvrRender.obj \
+	nvrOglExt.obj \
+	SimpleVolume.obj \
+	CropReadVolume.obj \
+
+TARGET = nvr.lib
+
+CXX = cl -nologo -c
+AR = lib /NOLOGO
+LINK = link
+
+.SUFFIXES: .cpp .obj
+
+.cpp.obj:
+	$(CXX) $(CFLAGS) $<
+
+
+nvr.lib : $(OBJS)
+	$(AR) -out:$@ $** 
+
+
+clean : 
+	-@erase *.obj
+
+distclean : clean
+	-@erase $(TARGET) vc*0.*
+

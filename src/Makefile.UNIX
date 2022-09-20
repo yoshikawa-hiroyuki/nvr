@@ -1,0 +1,83 @@
+#
+installprefix=$(ROOT)
+prefix = /usr/local/nvr-1.0
+
+LIB_INSTDIR = $(installprefix)$(prefix)/lib
+INC_INSTDIR = $(installprefix)$(prefix)/include
+
+G = -O3
+#G = -g -D_GL_DEBUG
+
+ifeq ("$(shell uname)", "Linux") 
+  OS="Linux"
+endif
+ifeq ("$(shell uname)", "Darwin")
+  OS="MacOSX"
+endif
+
+CXXFLAGS = -I. -I../../vfr/util -D_FILE_OFFSET_BITS=64 $(G) \
+	-DGL_GLEXT_PROTOTYPES
+
+ifeq ($(OS), "MacOSX")
+  CXX = `wx-config --cxx`
+  CXXFLAGS += -framework OpenGL -DMACOSX
+endif
+
+OBJS =	nvrBspTree.o \
+	nvrBrick.o \
+	nvrBrickSorter.o \
+	nvrOrthoSliceBrick.o \
+	nvrRender.o \
+	SimpleVolume.o \
+	CropReadVolume.o \
+
+NVRLIB = libNVR.a
+LIBNVR = -L. -lNVR
+
+SRCS = $(OBJS:.o=.C) nvrOglExt.cpp
+DOSDIR = Win32
+
+NVRHEADERS = \
+	nvrDefs.h \
+	nvrBspTree.h \
+	nvrBrick.h \
+	nvrOrthoSliceBrick.h  \
+	nvrBrickSorter.h \
+	nvrRender.h \
+	nvrLUT.h \
+	nvrOglExt.h \
+	SimpleVolume.h \
+	CropReadVolume.h \
+
+AR = ar -curv
+RANLIB = ranlib
+
+all : $(NVRLIB)
+
+dos :
+	putfiles='${SRCS} ${NVRHEADERS}'; dosdir='${DOSDIR}'; \
+	for i in $$putfiles; do \
+		a=`echo $$i | sed -e 's/.C/.cpp/'` \
+		nkf --windows $$i > $$dosdir/$$a; \
+	done
+
+$(NVRLIB) : $(OBJS)
+	$(AR) $(NVRLIB) $(OBJS)
+	$(RANLIB) $(NVRLIB)
+
+clean :
+	$(RM) $(OBJS)
+
+distclean : clean
+	$(RM) $(NVRLIB)
+
+install : install-lib install-headers
+
+install-lib : $(NVRLIB)
+	install -d $(LIB_INSTDIR)
+	install -m 644 $(NVRLIB) $(LIB_INSTDIR)
+
+install-headers : $(NVRHEADERS)
+	install -d $(INC_INSTDIR)
+	install -m 644 $(NVRHEADERS) $(INC_INSTDIR)
+

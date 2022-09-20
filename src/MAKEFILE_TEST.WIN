@@ -1,0 +1,49 @@
+#
+# MAKEFILE for TEST_NVR
+#
+
+SDLDIR = C:/SDL/SDL-1.2.5
+SDLIMGDIR = C:/SDL/SDL_image-1.2.3
+#WXDIR = C:/wxWindows-2.4.2
+VFRDIR = ../../vfr/dist
+
+CFLAGS = /D_WIN32 /DWIN32 /W3 /GR \
+ /O2 /DNDEBUG /D_WINDOWS /DWINVER=0x400 /D_MT \
+ /DCRTAPI1=_cdecl /DCRTAPI2=_cdecl /D_X86_=1 /D_WIN32_IE=0x0300 /FD /EHsc \
+ /MD /YX"stdafx.h" \
+ /I$(VFRDIR)/include /I$(SDLDIR)/include /I$(SDLIMGDIR)/include 
+
+LDLIBS = /libpath:$(VFRDIR)/lib \
+ /libpath:$(SDLDIR)/lib /libpath:$(SDLIMGDIR)/lib \
+ vfr.lib vfru.lib vfrSDL.lib nvr.lib \
+ SDL.lib SDLmain.lib SDL_image.lib \
+ glu32.lib opengl32.lib
+
+PROGRAM = TEST_NVR
+
+OBJS = TEST_NVR.obj
+
+RES = $(VFRDIR)/lib/vfr.res
+
+CXX = cl -nologo -c
+LINK = link
+LDFLAGS = /OPT:REF /NOLOGO /INCREMENTAL:NO \
+ /SUBSYSTEM:WINDOWS /MACHINE:X86 \
+ /NODEFAULTLIB:LIBC.lib /FORCE:MULTIPLE
+
+.SUFFIXES: .cpp .obj
+
+.cpp.obj:
+	$(CXX) $(CFLAGS) $< /Fo$@
+
+
+$(PROGRAM).exe : $(OBJS)
+	$(LINK) $(LDFLAGS) -out:$@ $(OBJS) $(RES) $(LDLIBS)
+
+
+clean : 
+	-@erase *.obj
+
+distclean : clean
+	-@erase $(PROGRAM).exe vc70.*
+
