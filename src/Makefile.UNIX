@@ -51,6 +51,7 @@ NVRHEADERS = \
 
 AR = ar -curv
 RANLIB = ranlib
+INSTALL = install -D
 
 all : $(NVRLIB)
 
@@ -64,6 +65,9 @@ dos :
 $(NVRLIB) : $(OBJS)
 	$(AR) $(NVRLIB) $(OBJS)
 	$(RANLIB) $(NVRLIB)
+
+install : $(NVRLIB)
+	$(install) $(NVRLIB) ../lib/$(NVRLIB)
 
 clean :
 	$(RM) $(OBJS)

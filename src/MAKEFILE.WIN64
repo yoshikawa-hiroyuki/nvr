@@ -1,7 +1,7 @@
 #
 # MAKEFILE for nvr library
 #
-GLEWDIR = ../../glew-1.9.0
+GLEWDIR = $(VISIO_GLEW_TOP)
 VFRDIR = ../../vfr/dist
 
 CFLAGS = /D_WINDOWS /DWINDOWS /W3 /GR \
@@ -23,6 +23,7 @@ TARGET = nvr.lib
 CXX = cl -nologo -c
 AR = lib /NOLOGO
 LINK = link
+INSTALL = copy
 
 .SUFFIXES: .cpp .obj
 
@@ -33,6 +34,9 @@ LINK = link
 nvr.lib : $(OBJS)
 	$(AR) -out:$@ $** 
 
+install : $(TARGET)
+	if not exist "..\lib" mkdir "..\lib"
+	$(INSTALL) $(TARGET) ..\lib\
 
 clean : 
 	-@erase *.obj
